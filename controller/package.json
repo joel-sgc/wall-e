@@ -1,0 +1,20 @@
+{
+  "name": "wall-e",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "hyprctl keyword input:repeat_delay 0 && tsx index.ts && hyprctl keyword input:repeat_delay 600"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.33.0",
+  "dependencies": {
+    "@serialport/parser-readline": "^13.0.0",
+    "serialport": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0"
+  }
+}

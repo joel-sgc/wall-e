@@ -1,0 +1,45 @@
+language en
+name WallE
+
+# Klatt synthesis mode 5 — electronic formant synthesis character
+klatt 5
+
+# Base pitch 200 Hz, range up to 380 Hz.
+# Combined with -p 88 in the caller this lands around 320-360 Hz —
+# Wall-E's signature higher-than-human-adult register.
+pitch 80 220
+
+# Formant frequency shifts (freq%, amplitude%, bandwidth%)
+# Shifting formants UP 15-35% simulates a smaller resonating cavity —
+# a toy or electronic speaker rather than an adult human vocal tract.
+# This is the primary thing that separates the "Wall-E" quality from
+# the Stephen Hawking / DECtalk quality (which uses standard adult positions).
+formant 0  145  60 100
+formant 1  132 100  88
+formant 2  124 100  92
+formant 3  116  95  96
+formant 4  110  85 100
+formant 5  106  74 100
+formant 6  104  68 100
+formant 7  102  62 100
+formant 8  100  58 100
+
+# Slight graininess — cheap speaker / electronic box quality
+roughness 22
+
+# Reduced voicing amplitude — more synthetic, less organic breathiness
+voicing 60
+
+# Natural English intonation (1 = default rise/fall patterns).
+# anikaRobot used 'intonation 10' which collapsed everything to monotone.
+intonation 1
+
+consonants 98 104
+
+stressLength 0 1 2 3 4 5 6 7
+stressAdd 75 85 85 65 0 0 75 95
+stressAmp 14 14 22 22 14 14 18 22
+
+# Tone/EQ: reduced bass, balanced mids — less dark than anikaRobot's
+# 'tone 100 255' (which was max bass = sad/dark)
+tone 280 95 600 100 1200 72 2000 48 3000 28
