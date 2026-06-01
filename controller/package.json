@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "hyprctl keyword input:repeat_delay 0 && tsx index.ts && hyprctl keyword input:repeat_delay 600"
+    "start": "hyprctl keyword input:repeat_delay 0 && tsx index.ts && hyprctl keyword input:repeat_delay 600",
+    "calibrate": "tsx calibrate.ts"
   },
   "keywords": [],
   "author": "",

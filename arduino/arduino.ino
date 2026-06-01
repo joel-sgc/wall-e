@@ -3,9 +3,10 @@
 #include <Adafruit_PWMServoDriver.h>
 
 // --- HC-12 Setup ---
-HardwareSerial HC12(2); // Bind to ESP32 UART2
-const int HC12_RX_PIN = 16; // Connect to HC-12 TX
-const int HC12_TX_PIN = 17; // Connect to HC-12 RX
+// Revert to UART2 but with explicit pin remapping
+HardwareSerial HC12(2); // Back to UART2
+const int HC12_RX_PIN = 16; // RX pin
+const int HC12_TX_PIN = 17; // TX pin
 
 // --- PCA9685 Setup ---
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
@@ -39,14 +40,20 @@ float servoPositions[16] = {
 int8_t jogDirections[16] = {0}; 
 
 unsigned long lastJogTime = 0;
-const int JOG_SPEED_MS = 20;      
-const float JOG_STEP_SIZE = 4.0;  
+const int JOG_SPEED_MS = 20;
+const float JOG_STEP_SIZE = 4.0;
+
+unsigned long lastHC12Test = 0;
+const int HC12_TEST_INTERVAL = 2000;  
 
 void setup() {
   Serial.begin(115200);
 
   // HC-12 Hardware Serial setup
+  // Try with explicit pin assignment
+  Serial.println("Initializing UART2...");
   HC12.begin(9600, SERIAL_8N1, HC12_RX_PIN, HC12_TX_PIN);
+  Serial.printf("UART2 initialized on RX=%d, TX=%d at 9600 baud\n", HC12_RX_PIN, HC12_TX_PIN);
 
   Wire.begin(); 
   // REMOVED: Wire.setClock(400000); // Let it run at the stable 100kHz default
@@ -75,13 +82,26 @@ void setup() {
   motorStop(); // Ensure motor is stopped on startup
 
   Serial.println("ESP32 + PCA9685 + BTS7960 Motor Ready! Listening for HC-12 commands on UART2...");
+  delay(500);
+
+  // Test HC-12 connection
+  HC12.println("HC-12 TEST MESSAGE");
+  Serial.println("Sent test message to HC-12");
 }
 
 void loop() {
 // --- PART 1: READ SERIAL PACKETS ---
+  // Debug: Show if we're getting ANY data
+  if (HC12.available() > 0) {
+    Serial.printf("HC12 has %d bytes available\n", HC12.available());
+    // Echo back to see what we received
+    uint8_t byte = HC12.read();
+    Serial.printf("  Byte: 0x%02X (%d)\n", byte, byte);
+  }
+
   // We need at least 7 bytes (1 start byte + 6 struct bytes)
   while (HC12.available() >= 7) {
-    
+
     // Read one byte. Is it our magic start byte?
     if (HC12.read() == 0xA5) {
       
@@ -129,6 +149,17 @@ void loop() {
     }
     // If the byte WASN'T 0xA5, the while loop just drops it and checks the next one.
     // This instantly clears out noise and resyncs the connection.
+  }
+
+  // --- PART 1.5: SEND TEST DATA ---
+  if (millis() - lastHC12Test >= HC12_TEST_INTERVAL) {
+    lastHC12Test = millis();
+    HC12.write(0xA5);
+    HC12.write('T');
+    HC12.write('E');
+    HC12.write('S');
+    HC12.write('T');
+    Serial.println("Sent HC-12 test packet");
   }
 
   // --- PART 2: THE JOGGER ---
